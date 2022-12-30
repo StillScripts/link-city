@@ -10,12 +10,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Link {
+model Platform {
   id        String   @id @default(cuid())
-  title     String   @unique
+  name      String   @unique
   url       String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  links Link[]
+}
+
+model Link {
+  id         String    @id @default(cuid())
+  title      String    @unique
+  url        String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  User       User      @relation(fields: [userId], references: [id])
+  userId     String
+  Platform   Platform? @relation(fields: [platformId], references: [id])
+  platformId String?
 }
 
 // Necessary for Next auth
@@ -53,6 +67,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  links         Link[]
 }
 
 model VerificationToken {
