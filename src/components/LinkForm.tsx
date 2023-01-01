@@ -1,23 +1,58 @@
-import { useState } from "react";
+import type { Platform } from "@prisma/client";
+import type { FormEvent } from "react";
+import { useCallback, useState } from "react";
+import { trpc } from "../utils/trpc";
 import { PlatformAutocomplete } from "./PlatformAutocomplete";
 
-export const LinkForm = () => {
-  const [enquiryType, setEnquiryType] = useState<"platform" | "website">(
-    "platform"
-  );
+export type LinkType = "platform" | "website";
+
+interface FormValues {
+  type: LinkType;
+  title: string;
+  url: string;
+}
+
+interface LinkFormProps {
+  userId: string;
+  returnHome: () => void;
+}
+export const LinkForm: React.FC<LinkFormProps> = ({ userId, returnHome }) => {
+  const mutation = trpc.links.addLink.useMutation();
+
+  const [form, setForm] = useState<FormValues>({
+    type: "platform",
+    title: "",
+    url: "",
+  });
+
+  const [platform, setPlatform] = useState<Platform>();
 
   const handleToggle = () => {
-    switch (enquiryType) {
+    switch (form.type) {
       case "platform":
-        setEnquiryType("website");
+        setForm({ ...form, type: "website" });
         break;
       case "website":
-        setEnquiryType("platform");
+        setForm({ ...form, type: "platform" });
         break;
     }
   };
+
+  const addLink = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      mutation.mutate({
+        userId,
+        platformId: platform?.id,
+        ...form,
+      });
+    },
+    [form, mutation, platform?.id, userId]
+  );
+
   return (
-    <form className="space-y-8 divide-y divide-gray-200">
+    <form onSubmit={addLink} className="space-y-8 divide-y divide-gray-200">
       <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
         <div className="space-y-6 sm:space-y-5">
           <div>
@@ -50,7 +85,7 @@ export const LinkForm = () => {
                         id="platform"
                         name="platform"
                         type="radio"
-                        checked={enquiryType === "platform"}
+                        checked={form.type === "platform"}
                         onChange={handleToggle}
                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
@@ -66,7 +101,7 @@ export const LinkForm = () => {
                         id="website"
                         name="website"
                         type="radio"
-                        checked={enquiryType === "website"}
+                        checked={form.type === "website"}
                         onChange={handleToggle}
                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
@@ -81,7 +116,7 @@ export const LinkForm = () => {
                 </div>
               </div>
             </div>
-            {enquiryType === "website" ? (
+            {form.type === "website" ? (
               <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
                 <label
                   htmlFor="title"
@@ -94,12 +129,19 @@ export const LinkForm = () => {
                     id="title"
                     name="title"
                     type="text"
+                    onChange={(e) => {
+                      setForm({ ...form, title: e.target.value });
+                    }}
+                    value={form.title}
                     className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
                 </div>
               </div>
             ) : (
-              <PlatformAutocomplete />
+              <PlatformAutocomplete
+                platform={platform}
+                setPlatform={setPlatform}
+              />
             )}
             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
               <label
@@ -113,6 +155,11 @@ export const LinkForm = () => {
                   id="url"
                   name="url"
                   type="text"
+                  required
+                  onChange={(e) => {
+                    setForm({ ...form, url: e.target.value });
+                  }}
+                  value={form.url}
                   className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
@@ -124,6 +171,7 @@ export const LinkForm = () => {
         <div className="flex justify-end">
           <button
             type="button"
+            onClick={returnHome}
             className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
           >
             Cancel

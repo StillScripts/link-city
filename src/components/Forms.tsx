@@ -41,7 +41,7 @@ export const Forms: React.FC<FormsProps> = ({ action, userId, returnHome }) => {
         )}
         {action === "manage-links" && (
           <div className="rounded-xl bg-white bg-opacity-90 p-4">
-            <LinkForm />
+            <LinkForm userId={userId} returnHome={returnHome} />
           </div>
         )}
       </div>

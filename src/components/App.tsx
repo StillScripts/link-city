@@ -1,5 +1,6 @@
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { trpc } from "../utils/trpc";
 import type { Action } from "./Actions";
 import { Actions } from "./Actions";
 import { Forms } from "./Forms";
@@ -7,18 +8,22 @@ import { Forms } from "./Forms";
 export const App = () => {
   const [action, setAction] = useState<Action>("home");
 
-  const { data: sessionData } = useSession();
+  const { data, isLoading } = trpc.auth.getSession.useQuery();
+
+  if (isLoading) {
+    return <p className="text-center text-xl text-white">Loading...</p>;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-xl text-white">
-        {sessionData ? (
-          <span>Logged in as {sessionData.user?.name}.</span>
+        {data ? (
+          <span>Logged in as {data.user?.name}.</span>
         ) : (
           <span>Log in to access your account and manage your links page.</span>
         )}
       </p>
-      {sessionData ? (
+      {data ? (
         <Actions handleClick={setAction} />
       ) : (
         <button
@@ -28,10 +33,10 @@ export const App = () => {
           Sign in with Discord
         </button>
       )}
-      {sessionData?.user && (
+      {data?.user && (
         <Forms
           action={action}
-          userId={sessionData.user.id}
+          userId={data.user.id}
           returnHome={() => setAction("home")}
         />
       )}

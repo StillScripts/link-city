@@ -34,16 +34,22 @@ export const linksRouter = router({
 
   addLink: publicProcedure
     .input(
-      z.object({ id: z.string(), username: z.string(), about: z.string() })
+      z.object({
+        url: z.string(),
+        userId: z.string(),
+        type: z.string(),
+        platformId: z.string().nullish(),
+        title: z.string().nullish(),
+      })
     )
     .mutation(({ ctx, input }) => {
-      ctx.prisma.user.update({
-        where: {
-          id: input.id,
-        },
+      ctx.prisma.link.create({
         data: {
-          username: input.username,
-          about: input.about,
+          url: input.url,
+          userId: input.userId,
+          type: input.type,
+          platformId: input.platformId,
+          title: input.title,
         },
       });
     }),

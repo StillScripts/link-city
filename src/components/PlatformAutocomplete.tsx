@@ -1,8 +1,9 @@
-import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Combobox } from "@headlessui/react";
 import { classNames } from "../utils/common";
 import { trpc } from "../utils/trpc";
+import type { Platform } from "@prisma/client";
 
 export type PlatformOption = "Facebook" | "Instagram" | "Twitter" | "GitHub";
 
@@ -67,10 +68,15 @@ export const PlatformIcon = ({ platform }: { platform: PlatformOption }) => {
   }
 };
 
-export const PlatformAutocomplete = () => {
-  const [query, setQuery] = useState("");
-  const [selectedPlatform, setSelectedPlatform] = useState(null);
+interface PlatformAutocompleteProps {
+  platform?: Platform;
+  setPlatform: Dispatch<SetStateAction<Platform | undefined>>;
+}
 
+export const PlatformAutocomplete: React.FC<PlatformAutocompleteProps> = ({
+  platform,
+  setPlatform,
+}) => {
   const { data, error, isLoading } = trpc.platforms.getPlatforms.useQuery();
 
   if (error) {
@@ -81,19 +87,18 @@ export const PlatformAutocomplete = () => {
     return <p>Loading platforms...</p>;
   }
 
-  const filteredPlatforms =
-    query === ""
-      ? data
-      : data?.filter((s) => {
-          return s.name.toLowerCase().includes(query.toLowerCase());
-        });
+  const filteredPlatforms = platform
+    ? data?.filter((item) => {
+        return item.id === platform.id;
+      })
+    : data;
 
   return (
     <Combobox
       className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5"
       as="div"
-      value={selectedPlatform}
-      onChange={setSelectedPlatform}
+      value={platform}
+      onChange={setPlatform}
     >
       <Combobox.Label className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
         Platform
@@ -101,8 +106,8 @@ export const PlatformAutocomplete = () => {
       <div className="relative mt-1 w-full sm:col-span-2">
         <Combobox.Input
           className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
-          onChange={(event) => setQuery(event.target.value)}
-          displayValue={(platform: string) => platform}
+          onChange={(e) => setPlatform(e.target.value as unknown as Platform)}
+          displayValue={(platform: Platform) => platform.name}
         />
         <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
           <ChevronUpDownIcon
@@ -115,8 +120,8 @@ export const PlatformAutocomplete = () => {
           <Combobox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
             {filteredPlatforms.map((platform) => (
               <Combobox.Option
-                key={platform.name}
-                value={platform.name}
+                key={platform.id}
+                value={platform}
                 className={({ active }) =>
                   classNames(
                     "relative cursor-default select-none py-2 pl-3 pr-9",
@@ -127,7 +132,9 @@ export const PlatformAutocomplete = () => {
                 {({ active, selected }) => (
                   <>
                     <div className="flex items-center">
-                      <PlatformIcon platform={platform.name as PlatformOption} />
+                      <PlatformIcon
+                        platform={platform.name as PlatformOption}
+                      />
                       <span
                         className={classNames(
                           "ml-3 truncate",
