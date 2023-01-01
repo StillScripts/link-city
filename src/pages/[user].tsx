@@ -59,8 +59,12 @@ export default function LinksPage(
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             {data.username}
           </h1>
-          <p className="mt-8 text-gray-300">{data.about}</p>
-          <div className="mt-4 rounded bg-white bg-opacity-5 py-2 px-4">
+          {data.about && (
+            <p className="mt-8 text-gray-300">
+              {data.about} Here are my links:
+            </p>
+          )}
+          <div className="mt-4 rounded-2xl bg-white bg-opacity-5 py-2 px-4">
             {data.links.map((link) => (
               <div key={link.id}>
                 <Link
@@ -68,7 +72,7 @@ export default function LinksPage(
                   rel="noopener noreferrer"
                   className={classNames(
                     BTN_COMMON,
-                    "mb-2 bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
+                    "w-full justify-center mb-2 bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
                   )}
                   href={link.url}
                 >

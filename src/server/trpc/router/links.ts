@@ -37,7 +37,7 @@ export const linksRouter = router({
       z.object({
         url: z.string(),
         userId: z.string(),
-        type: z.string(),
+        type: z.enum(["platform", "website"]),
         platformId: z.string().nullish(),
         title: z.string().nullish(),
       })

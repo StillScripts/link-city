@@ -18,7 +18,7 @@ export const App = () => {
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-xl text-white">
         {data ? (
-          <span>Logged in as {data.user?.name}.</span>
+          <span>Logged in as <span className="text-[hsl(280,100%,70%)]">{data.user?.name}</span>.</span>
         ) : (
           <span>Log in to access your account and manage your links page.</span>
         )}

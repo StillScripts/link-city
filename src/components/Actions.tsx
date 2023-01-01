@@ -11,7 +11,7 @@ interface ActionProps {
   handleClick: Dispatch<SetStateAction<Action>>;
 }
 export const Actions: React.FC<ActionProps> = ({ handleClick }) => (
-  <div className="mt-3 mb-6 flex flex-wrap space-x-2">
+  <div className="mt-3 mb-6 flex flex-wrap space-x-3">
     <button
       type="button"
       onClick={() => handleClick("manage-page")}

@@ -151,17 +151,26 @@ export const LinkForm: React.FC<LinkFormProps> = ({ userId, returnHome }) => {
                 Url
               </label>
               <div className="mt-1 sm:col-span-2 sm:mt-0">
-                <input
-                  id="url"
-                  name="url"
-                  type="text"
-                  required
-                  onChange={(e) => {
-                    setForm({ ...form, url: e.target.value });
-                  }}
-                  value={form.url}
-                  className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
+                <div className="flex max-w-lg rounded-md shadow-sm">
+                  <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
+                    https://
+                  </span>
+                  <input
+                    id="url"
+                    name="url"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setForm({ ...form, url: e.target.value });
+                    }}
+                    value={
+                      form.url.includes("https://")
+                        ? form.url.split("https://")[1]
+                        : form.url
+                    }
+                    className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                  />
+                </div>
               </div>
             </div>
           </div>
