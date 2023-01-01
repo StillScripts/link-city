@@ -1,58 +1,106 @@
+import { useState } from "react";
 import { PlatformAutocomplete } from "./PlatformAutocomplete";
 
 export const LinkForm = () => {
+  const [enquiryType, setEnquiryType] = useState<"platform" | "website">(
+    "platform"
+  );
+
+  const handleToggle = () => {
+    switch (enquiryType) {
+      case "platform":
+        setEnquiryType("website");
+        break;
+      case "website":
+        setEnquiryType("platform");
+        break;
+    }
+  };
   return (
     <form className="space-y-8 divide-y divide-gray-200">
       <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
         <div className="space-y-6 sm:space-y-5">
           <div>
             <h3 className="text-lg font-medium leading-6 text-gray-900">
-              Your Links Page
+              Add New Link
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              This information will be used to create your links page.
+              This link will be displayed on your links page.
             </p>
           </div>
 
           <div className="space-y-6 sm:space-y-5">
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-              >
-                Username
-              </label>
-              <div className="mt-1 sm:col-span-2 sm:mt-0">
-                <div className="flex max-w-lg rounded-md shadow-sm">
-                  <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                    linkcity.com/
-                  </span>
-                  <input
-                    type="text"
-                    name="username"
-                    id="username"
-                    autoComplete="username"
-                    className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                  />
+            <div className="sm:grid sm:grid-cols-3 sm:items-baseline sm:gap-4">
+              <div>
+                <div
+                  className="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700"
+                  id="label-notifications"
+                >
+                  Link Type
+                </div>
+              </div>
+              <div className="sm:col-span-2">
+                <div className="max-w-lg">
+                  <p className="text-sm text-gray-500">
+                    Select the type of link you are adding
+                  </p>
+                  <div className="mt-4 space-y-4">
+                    <div className="flex items-center">
+                      <input
+                        id="platform"
+                        name="platform"
+                        type="radio"
+                        checked={enquiryType === "platform"}
+                        onChange={handleToggle}
+                        className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <label
+                        htmlFor="platform"
+                        className="ml-3 block text-sm font-medium text-gray-700"
+                      >
+                        Social Media Platform
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        id="website"
+                        name="website"
+                        type="radio"
+                        checked={enquiryType === "website"}
+                        onChange={handleToggle}
+                        className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <label
+                        htmlFor="website"
+                        className="ml-3 block text-sm font-medium text-gray-700"
+                      >
+                        Custom Website Link
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-              >
-                Title
-              </label>
-              <div className="mt-1 sm:col-span-2 sm:mt-0">
-                <input
-                  id="title"
-                  name="title"
-                  type="text"
-                  className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
+            {enquiryType === "website" ? (
+              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                >
+                  Title
+                </label>
+                <div className="mt-1 sm:col-span-2 sm:mt-0">
+                  <input
+                    id="title"
+                    name="title"
+                    type="text"
+                    className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              <PlatformAutocomplete />
+            )}
             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
               <label
                 htmlFor="url"
@@ -69,12 +117,9 @@ export const LinkForm = () => {
                 />
               </div>
             </div>
-
-            <PlatformAutocomplete />
           </div>
         </div>
       </div>
-
       <div className="pt-5">
         <div className="flex justify-end">
           <button
