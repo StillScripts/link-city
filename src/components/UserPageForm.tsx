@@ -1,5 +1,5 @@
 import type { FormEvent } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { trpc } from "../utils/trpc";
 
 interface FormValues {
@@ -16,7 +16,7 @@ export const UserPageForm: React.FC<UserPageFormProps> = ({
   userId,
   returnHome,
 }) => {
-  const mutation = trpc.links.updateUserDetails.useMutation();
+  const mutation = trpc.links.updateLinkPage.useMutation();
 
   const [form, setForm] = useState<FormValues>(defaultValues);
 
